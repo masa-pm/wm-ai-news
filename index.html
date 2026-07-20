@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>ウェルスマネジメント×AI動向レポート</title>
+<style>
+  :root {
+    --navy: #1F4E79;
+    --navy-dark: #163A5A;
+    --lightblue: #D6E4F0;
+    --grey: #595959;
+    --red: #C00000;
+    --yellow: #BF9000;
+    --green: #2E7D32;
+    --bg: #F4F6F8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Arial, sans-serif;
+    background: var(--bg);
+    color: #222;
+  }
+
+  /* ---------- Password gate ---------- */
+  #gate {
+    position: fixed; inset: 0; background: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; flex-direction: column;
+  }
+  #gate .box {
+    background: white; padding: 40px 36px; border-radius: 10px;
+    width: 320px; max-width: 90vw; text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  }
+  #gate h1 { font-size: 18px; color: var(--navy); margin: 0 0 6px; }
+  #gate p { font-size: 12px; color: var(--grey); margin: 0 0 20px; }
+  #gate input {
+    width: 100%; padding: 10px 12px; font-size: 14px;
+    border: 1px solid #ccc; border-radius: 6px; margin-bottom: 12px;
+  }
+  #gate button {
+    width: 100%; padding: 10px 12px; font-size: 14px; font-weight: bold;
+    background: var(--navy); color: white; border: none; border-radius: 6px;
+    cursor: pointer;
+  }
+  #gate button:hover { background: var(--navy-dark); }
+  #gate .err { color: var(--red); font-size: 12px; height: 16px; margin-top: 8px; }
+  #gate .notice { font-size: 10px; color: #999; margin-top: 18px; line-height: 1.5; }
+
+  /* ---------- Main content ---------- */
+  #content { display: none; }
+  header.hero {
+    background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+    color: white; padding: 48px 20px 40px; text-align: center;
+  }
+  header.hero h1 { margin: 0 0 8px; font-size: 26px; }
+  header.hero p.en { margin: 0 0 18px; color: var(--lightblue); font-size: 14px; }
+  header.hero p.meta { margin: 0; font-size: 12px; color: #cfe0f0; }
+
+  main { max-width: 860px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  .disclaimer {
+    background: white; border-left: 4px solid var(--navy);
+    padding: 14px 18px; font-size: 12px; color: var(--grey);
+    border-radius: 4px; margin-bottom: 20px;
+  }
+
+  /* ---------- Legend (2-axis explanation) ---------- */
+  .legend {
+    background: white; border-radius: 6px; padding: 12px 18px;
+    margin-bottom: 28px; font-size: 11.5px; color: var(--grey);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05); line-height: 2;
+  }
+  .legend .lbl { font-weight: bold; color: var(--navy); margin-right: 8px; }
+  .legend .sep { display: inline-block; width: 100%; height: 0; }
+
+  /* ---------- Volume cards ---------- */
+  .vol-card {
+    background: white; border-radius: 8px; padding: 22px 24px;
+    margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-left: 5px solid var(--navy);   /* デザイン仕様：左ボーダーにアクセント色 */
+  }
+  .vol-card .vol-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; margin-bottom: 12px;
+    border-bottom: 1px solid #eef1f4; padding-bottom: 8px;
+  }
+  .vol-card .vol-title { font-size: 18px; font-weight: bold; color: var(--navy); }
+  .vol-card .vol-date { font-size: 12px; color: var(--grey); }
+
+  .news { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 9px; font-size: 13px; line-height: 1.6; }
+  .news .tags { flex: 0 0 auto; display: flex; gap: 5px; padding-top: 1px; white-space: nowrap; }
+  .news .txt { flex: 1; }
+
+  /* importance badge (solid) */
+  .imp {
+    display: inline-block; font-size: 10px; font-weight: bold; color: white;
+    padding: 2px 7px; border-radius: 3px; min-width: 46px; text-align: center;
+  }
+  .imp.top { background: var(--red); }
+  .imp.watch { background: var(--yellow); }
+
+  /* category chip (outlined) */
+  .cat {
+    display: inline-block; font-size: 10px; font-weight: bold;
+    padding: 2px 7px; border-radius: 3px; white-space: nowrap;
+    border: 1px solid #c3d0de; color: var(--navy); background: #f6f9fc;
+  }
+
+  .actions { margin-top: 16px; }
+  .actions a {
+    display: inline-block; background: var(--navy); color: white;
+    text-decoration: none; font-size: 13px; padding: 8px 16px;
+    border-radius: 5px; font-weight: bold; margin-right: 8px;
+  }
+  .actions a.ghost {
+    background: white; color: var(--navy); border: 1px solid var(--navy);
+  }
+  .actions a:hover { background: var(--navy-dark); color: white; }
+
+  footer {
+    text-align: center; font-size: 11px; color: #999; padding: 20px;
+    border-top: 1px solid #e4e8ec; margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+  <div id="gate">
+    <div class="box">
+      <h1>ウェルスマネジメント×AI動向レポート</h1>
+      <p>関係者限定ページです。パスワードを入力してください。</p>
+      <input type="password" id="pw" placeholder="パスワード" autocomplete="off">
+      <button onclick="checkPw()">閲覧する</button>
+      <div class="err" id="err"></div>
+      <div class="notice">
+        ※ このページはURLを知る関係者向けの簡易ゲートです。強固なアクセス制御ではありません。
+      </div>
+    </div>
+  </div>
+
+  <div id="content">
+    <header class="hero">
+      <h1>ウェルスマネジメント×AI動向レポート</h1>
+      <p class="en">Wealth Management × AI Intelligence Report</p>
+      <p class="meta">グローバル大手行・国内メガバンク・WealthTechのAI動向を継続調査 ｜ 全6巻</p>
+    </header>
+
+    <main>
+      <div class="disclaimer">
+        本ページは関係者限定の共有ページです。各レポートは確認できた一次情報のみを掲載し、推測・未確認情報は明示的に区別しています。詳細は各レポート（HTML／PDF）をご参照ください。
+      </div>
+
+      <div class="legend">
+        <span class="lbl">重要度（実在性）</span>
+        <span class="imp top">最重要</span> 実際に稼働・利用中／規制は成立・施行済み
+        <span class="imp watch">注目</span> 発表・計画・試験・研究段階（アドバルーン寄り）
+        <span class="sep"></span>
+        <span class="lbl">分野</span>
+        <span class="cat">🌐 海外</span> グローバル大手行
+        <span class="cat">🏯 国内</span> 国内メガバンク
+        <span class="cat">⚖️ 規制</span> 当局・ガバナンス
+        <span class="cat">🚀 Tech</span> WealthTech・AIベンダー
+      </div>
+
+      <!-- Vol.6 -->
+      <div class="vol-card">
+        <div class="vol-head">
+          <span class="vol-title">Vol.6</span>
+          <span class="vol-date">2026年7月20日</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">🚀 Tech</span></span>
+          <span class="txt">AIネイティブRIAの起業ラッシュ本格化。元MS/Fidelity CIOらが「Valence」を$7.7Mで設立（$5M〜$30M世帯を標的・今夏SEC登録予定）、Arca（$64M）に続く</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">🌐 海外</span></span>
+          <span class="txt">JPMorgan・GoldmanがAIスーパーサイクルでQ2記録的増収（Goldman+39%/$20.3B、JPM+27%/$58B）。JPMはAIによる一部人員削減にも言及</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">🚀 Tech</span></span>
+          <span class="txt">Anthropic IPOが10月Nasdaq上場に向け前進、投資家ミーティング始動（$60B超調達・主幹事GS/JPM/MS・時価総額$965B）</span>
+        </div>
+        <div class="actions">
+          <a href="WM_AI_Weekly_Vol6_20260720.html">HTMLで読む</a>
+          <a class="ghost" href="WM_AI_Weekly_Vol6_20260720.pdf" target="_blank">PDFを開く</a>
+        </div>
+      </div>
+
+      <!-- Vol.5 -->
+      <div class="vol-card">
+        <div class="vol-head">
+          <span class="vol-title">Vol.5</span>
+          <span class="vol-date">2026年7月14日</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp watch">注目</span><span class="cat">🌐 海外</span></span>
+          <span class="txt">JPMorganが資産配分を自律判断するAIエージェントを構築、バックテストで60/40を上回る（研究段階・商品化未定）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">🌐 海外</span></span>
+          <span class="txt">米大手行がAIエージェントを「デジタル同僚」へ格上げ（BNY 134体が稼働・UBSは実取引まで実行、KPMG調査で51%が試験導入）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">⚖️ 規制</span></span>
+          <span class="txt">EU AI Act簡素化（Digital Omnibus）を理事会が最終承認、高リスク義務化は2027〜28年へ延期確定</span>
+        </div>
+        <div class="actions">
+          <a href="WM_AI_Weekly_Vol5_20260714.html">HTMLで読む</a>
+          <a class="ghost" href="WM_AI_Weekly_Vol5_20260714.pdf" target="_blank">PDFを開く</a>
+        </div>
+      </div>
+
+      <!-- Vol.4 -->
+      <div class="vol-card">
+        <div class="vol-head">
+          <span class="vol-title">Vol.4</span>
+          <span class="vol-date">2026年7月6日</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp watch">注目</span><span class="cat">🌐 海外</span></span>
+          <span class="txt">HSBC調査：富裕層の73%が投資でAIを利用するも、投資判断への影響力は人間37%・AI12%（調査結果）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp watch">注目</span><span class="cat">🏯 国内</span></span>
+          <span class="txt">MUFGが「AIエージェント×金融取引分科会」を設置、AI取引代行時代のルール整備に着手（これから）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">🚀 Tech</span></span>
+          <span class="txt">OpenAIがChatGPTに個人資産管理機能を投入、12,000超の金融機関と口座連携（提供開始）</span>
+        </div>
+        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol4_20260706.pdf" target="_blank">PDFを開く</a></div>
+      </div>
+
+      <!-- Vol.3 -->
+      <div class="vol-card">
+        <div class="vol-head">
+          <span class="vol-title">Vol.3</span>
+          <span class="vol-date">2026年6月29日</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">⚖️ 規制</span></span>
+          <span class="txt">金融庁・日銀のフロンティアAI対応9項目要請、対応期限が到来（施行中）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">🌐 海外</span></span>
+          <span class="txt">JPMorganがAIエージェントでプライベートバンキングの粗利20%増・カバレッジ50%増を実現（実績）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">🚀 Tech</span></span>
+          <span class="txt">Salesforceが RIA向け「Agentic Advisor」を一般提供開始、AIネイティブRIA（Arca・Era）が台頭（提供開始）</span>
+        </div>
+        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol3_20260629.pdf" target="_blank">PDFを開く</a></div>
+      </div>
+
+      <!-- Vol.2 -->
+      <div class="vol-card">
+        <div class="vol-head">
+          <span class="vol-title">Vol.2</span>
+          <span class="vol-date">2026年6月26日</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp watch">注目</span><span class="cat">🌐 海外</span></span>
+          <span class="txt">CitiがGoogle DeepMind製AIアバター「Citi Sky」を発表、Citigold顧客向けに今夏展開（予定）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp watch">注目</span><span class="cat">🚀 Tech</span></span>
+          <span class="txt">AI専業WealthTech3社（Arca・Wealth.com・Jump）が相次いで大型調達（資金調達）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">⚖️ 規制</span></span>
+          <span class="txt">金融庁・日銀がフロンティアAI脅威への対応を要請（2026/5/22、発出・施行）</span>
+        </div>
+        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol2_20260626.pdf" target="_blank">PDFを開く</a></div>
+      </div>
+
+      <!-- Vol.1 -->
+      <div class="vol-card">
+        <div class="vol-head">
+          <span class="vol-title">Vol.1</span>
+          <span class="vol-date">2026年6月26日</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp watch">注目</span><span class="cat">🌐 海外</span></span>
+          <span class="txt">Morgan Stanleyが外部AIエージェントにウェルス基盤を開放（MCP経由、早期提供・全面展開は2027年）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp watch">注目</span><span class="cat">🚀 Tech</span></span>
+          <span class="txt">McKinseyが「マス富裕層はAIで代替可能」と分析、AI系RIA「Arca」が$64M調達</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="imp top">最重要</span><span class="cat">🚀 Tech</span></span>
+          <span class="txt">NewEdge Advisors（AUM$100B超）がClaudeを全アドバイザーに展開（実運用中）</span>
+        </div>
+        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol1_20260626.pdf" target="_blank">PDFを開く</a></div>
+      </div>
+    </main>
+
+    <footer>WM×AI Weekly Report ｜ 関係者限定共有ページ ｜ 全6巻（Vol.1〜6）</footer>
+  </div>
+
+<script>
+  // Lightweight deterrent gate only — NOT real access control.
+  // Anyone with the page source or URL + password can view the content.
+  var PW_HASH = "51ddbfde58ebd7dadb4022c44cffc46bddceab1153b16e57c04e3908b37b7430"; // SHA-256 of the shared password (plaintext is NOT stored here)
+
+  async function sha256(text) {
+    const enc = new TextEncoder().encode(text);
+    const buf = await crypto.subtle.digest("SHA-256", enc);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function checkPw() {
+    const val = document.getElementById("pw").value;
+    const hash = await sha256(val);
+    if (hash === PW_HASH) {
+      document.getElementById("gate").style.display = "none";
+      document.getElementById("content").style.display = "block";
+      sessionStorage.setItem("wm_ai_ok", "1");
+    } else {
+      document.getElementById("err").textContent = "パスワードが違います。";
+    }
+  }
+
+  document.getElementById("pw").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") checkPw();
+  });
+
+  // Skip gate within the same browser tab session if already unlocked
+  if (sessionStorage.getItem("wm_ai_ok") === "1") {
+    document.getElementById("gate").style.display = "none";
+    document.getElementById("content").style.display = "block";
+  }
+</script>
+</body>
+</html>
