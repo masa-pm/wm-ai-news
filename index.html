@@ -91,6 +91,11 @@
   .vol-card .vol-title { font-size: 18px; font-weight: bold; color: var(--navy); }
   .vol-card .vol-date { font-size: 12px; color: var(--grey); }
 
+  .sectitle { max-width: 860px; margin: 8px auto 2px; padding: 0 4px 6px; font-size: 16px; font-weight: bold; color: var(--navy); border-bottom: 2px solid var(--navy); }
+  .vol-card.monthly { border-left-color: #7A3E9D; }
+  .vol-card.monthly .vol-title { color: #7A3E9D; }
+  .cat.mo { border-color: #d8c4e6; color: #7A3E9D; background: #f7f2fb; }
+
   .news { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 9px; font-size: 13px; line-height: 1.6; }
   .news .tags { flex: 0 0 auto; display: flex; gap: 5px; padding-top: 1px; white-space: nowrap; }
   .news .txt { flex: 1; }
@@ -146,7 +151,7 @@
     <header class="hero">
       <h1>ウェルスマネジメント×AI動向レポート</h1>
       <p class="en">Wealth Management × AI Intelligence Report</p>
-      <p class="meta">グローバル大手行・国内メガバンク・WealthTechのAI動向を継続調査 ｜ 全6巻</p>
+      <p class="meta">グローバル大手行・国内メガバンク・WealthTechのAI動向を継続調査 ｜ 週次レポート＋月次ディープリサーチ</p>
     </header>
 
     <main>
@@ -165,6 +170,8 @@
         <span class="cat">⚖️ 規制</span> 当局・ガバナンス
         <span class="cat">🚀 Tech</span> WealthTech・AIベンダー
       </div>
+
+      <h2 class="sectitle">週次レポート（Weekly）</h2>
 
       <!-- Vol.6 -->
       <div class="vol-card">
@@ -297,9 +304,32 @@
         </div>
         <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol1_20260626.pdf" target="_blank">PDFを開く</a></div>
       </div>
+
+      <h2 class="sectitle">月次ディープリサーチ（Monthly）</h2>
+
+      <!-- Monthly 2026-06 -->
+      <div class="vol-card monthly">
+        <div class="vol-head">
+          <span class="vol-title">2026年6月号</span>
+          <span class="vol-date">2026年6月</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="cat mo">📘 月次</span></span>
+          <span class="txt">競争地図と大手行AIの実装実態——「誰が、どこで稼いでいるか」を8章立てで深掘り</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="cat mo">📘 月次</span></span>
+          <span class="txt">セグメント経済学：マス富裕層の崩壊と手数料モデル転換、WealthTech脅威分析（競合／買収／提携）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="cat mo">📘 月次</span></span>
+          <span class="txt">日本市場「2〜3年遅れ」の先、規制競争、2026年後半の戦略アジェンダ（全19ページ）</span>
+        </div>
+        <div class="actions"><a class="ghost" href="WM_AI_DeepResearch_2026_06.pdf" target="_blank">PDFを開く</a></div>
+      </div>
     </main>
 
-    <footer>WM×AI Weekly Report ｜ 関係者限定共有ページ ｜ 全6巻（Vol.1〜6）</footer>
+    <footer>WM×AI Intelligence Report ｜ 関係者限定共有ページ ｜ 週次 全6巻（Vol.1〜6）＋月次ディープリサーチ</footer>
   </div>
 
 <script>
