@@ -9,6 +9,7 @@
   :root {
     --navy: #1F4E79;
     --navy-dark: #163A5A;
+    --purple: #7A3E9D;
     --lightblue: #D6E4F0;
     --grey: #595959;
     --red: #C00000;
@@ -71,11 +72,25 @@
   /* ---------- Legend (2-axis explanation) ---------- */
   .legend {
     background: white; border-radius: 6px; padding: 12px 18px;
-    margin-bottom: 28px; font-size: 11.5px; color: var(--grey);
+    margin-bottom: 24px; font-size: 11.5px; color: var(--grey);
     box-shadow: 0 1px 4px rgba(0,0,0,0.05); line-height: 2;
   }
   .legend .lbl { font-weight: bold; color: var(--navy); margin-right: 8px; }
   .legend .sep { display: inline-block; width: 100%; height: 0; }
+
+  /* ---------- Tabs ---------- */
+  .tabs { display: flex; gap: 6px; margin-bottom: 22px; border-bottom: 2px solid #dfe6ee; }
+  .tab {
+    background: none; border: none; padding: 11px 20px; font-size: 14px; font-weight: bold;
+    color: var(--grey); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+    font-family: inherit;
+  }
+  .tab:hover { color: var(--navy); }
+  .tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+  .tab[data-tab="monthly"]:hover { color: var(--purple); }
+  .tab[data-tab="monthly"].active { color: var(--purple); border-bottom-color: var(--purple); }
+  .tabpane { animation: fade .2s ease; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
   /* ---------- Volume cards ---------- */
   .vol-card {
@@ -85,16 +100,20 @@
   }
   .vol-card .vol-head {
     display: flex; justify-content: space-between; align-items: baseline;
-    flex-wrap: wrap; margin-bottom: 12px;
+    flex-wrap: wrap; margin-bottom: 10px;
     border-bottom: 1px solid #eef1f4; padding-bottom: 8px;
   }
   .vol-card .vol-title { font-size: 18px; font-weight: bold; color: var(--navy); }
   .vol-card .vol-date { font-size: 12px; color: var(--grey); }
 
-  .sectitle { max-width: 860px; margin: 8px auto 2px; padding: 0 4px 6px; font-size: 16px; font-weight: bold; color: var(--navy); border-bottom: 2px solid var(--navy); }
-  .vol-card.monthly { border-left-color: #7A3E9D; }
-  .vol-card.monthly .vol-title { color: #7A3E9D; }
-  .cat.mo { border-color: #d8c4e6; color: #7A3E9D; background: #f7f2fb; }
+  .topic-label {
+    font-size: 11.5px; font-weight: bold; color: var(--navy);
+    letter-spacing: .03em; margin: 0 0 9px;
+  }
+  .vol-card.monthly { border-left-color: var(--purple); }
+  .vol-card.monthly .vol-title { color: var(--purple); }
+  .vol-card.monthly .topic-label { color: var(--purple); }
+  .cat.mo { border-color: #d8c4e6; color: var(--purple); background: #f7f2fb; }
 
   .news { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 9px; font-size: 13px; line-height: 1.6; }
   .news .tags { flex: 0 0 auto; display: flex; gap: 5px; padding-top: 1px; white-space: nowrap; }
@@ -171,7 +190,14 @@
         <span class="cat">🚀 Tech</span> WealthTech・AIベンダー
       </div>
 
-      <h2 class="sectitle">週次レポート（Weekly）</h2>
+      <!-- ===== Tabs ===== -->
+      <div class="tabs">
+        <button class="tab active" data-tab="weekly" onclick="showTab('weekly')">週次レポート（Weekly）</button>
+        <button class="tab" data-tab="monthly" onclick="showTab('monthly')">月次ディープリサーチ（Monthly）</button>
+      </div>
+
+      <!-- ===== Weekly pane ===== -->
+      <div id="pane-weekly" class="tabpane">
 
       <!-- Vol.6 -->
       <div class="vol-card">
@@ -179,6 +205,7 @@
           <span class="vol-title">Vol.6</span>
           <span class="vol-date">2026年7月20日</span>
         </div>
+        <div class="topic-label">主要なTopic</div>
         <div class="news">
           <span class="tags"><span class="imp top">最重要</span><span class="cat">🚀 Tech</span></span>
           <span class="txt">AIネイティブRIAの起業ラッシュ本格化。元MS/Fidelity CIOらが「Valence」を$7.7Mで設立（$5M〜$30M世帯を標的・今夏SEC登録予定）、Arca（$64M）に続く</span>
@@ -192,8 +219,8 @@
           <span class="txt">Anthropic IPOが10月Nasdaq上場に向け前進、投資家ミーティング始動（$60B超調達・主幹事GS/JPM/MS・時価総額$965B）</span>
         </div>
         <div class="actions">
-          <a href="WM_AI_Weekly_Vol6_20260720.html">HTMLで読む</a>
-          <a class="ghost" href="WM_AI_Weekly_Vol6_20260720.pdf" target="_blank">PDFを開く</a>
+          <a href="WM_AI_Weekly_Vol6_20260720.html">レポート全文を読む</a>
+          <a class="ghost" href="WM_AI_Weekly_Vol6_20260720.pdf" target="_blank">PDF版</a>
         </div>
       </div>
 
@@ -203,6 +230,7 @@
           <span class="vol-title">Vol.5</span>
           <span class="vol-date">2026年7月14日</span>
         </div>
+        <div class="topic-label">主要なTopic</div>
         <div class="news">
           <span class="tags"><span class="imp watch">注目</span><span class="cat">🌐 海外</span></span>
           <span class="txt">JPMorganが資産配分を自律判断するAIエージェントを構築、バックテストで60/40を上回る（研究段階・商品化未定）</span>
@@ -216,8 +244,8 @@
           <span class="txt">EU AI Act簡素化（Digital Omnibus）を理事会が最終承認、高リスク義務化は2027〜28年へ延期確定</span>
         </div>
         <div class="actions">
-          <a href="WM_AI_Weekly_Vol5_20260714.html">HTMLで読む</a>
-          <a class="ghost" href="WM_AI_Weekly_Vol5_20260714.pdf" target="_blank">PDFを開く</a>
+          <a href="WM_AI_Weekly_Vol5_20260714.html">レポート全文を読む</a>
+          <a class="ghost" href="WM_AI_Weekly_Vol5_20260714.pdf" target="_blank">PDF版</a>
         </div>
       </div>
 
@@ -227,6 +255,7 @@
           <span class="vol-title">Vol.4</span>
           <span class="vol-date">2026年7月6日</span>
         </div>
+        <div class="topic-label">主要なTopic</div>
         <div class="news">
           <span class="tags"><span class="imp watch">注目</span><span class="cat">🌐 海外</span></span>
           <span class="txt">HSBC調査：富裕層の73%が投資でAIを利用するも、投資判断への影響力は人間37%・AI12%（調査結果）</span>
@@ -239,7 +268,7 @@
           <span class="tags"><span class="imp top">最重要</span><span class="cat">🚀 Tech</span></span>
           <span class="txt">OpenAIがChatGPTに個人資産管理機能を投入、12,000超の金融機関と口座連携（提供開始）</span>
         </div>
-        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol4_20260706.pdf" target="_blank">PDFを開く</a></div>
+        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol4_20260706.pdf" target="_blank">PDF版</a></div>
       </div>
 
       <!-- Vol.3 -->
@@ -248,6 +277,7 @@
           <span class="vol-title">Vol.3</span>
           <span class="vol-date">2026年6月29日</span>
         </div>
+        <div class="topic-label">主要なTopic</div>
         <div class="news">
           <span class="tags"><span class="imp top">最重要</span><span class="cat">⚖️ 規制</span></span>
           <span class="txt">金融庁・日銀のフロンティアAI対応9項目要請、対応期限が到来（施行中）</span>
@@ -260,7 +290,7 @@
           <span class="tags"><span class="imp top">最重要</span><span class="cat">🚀 Tech</span></span>
           <span class="txt">Salesforceが RIA向け「Agentic Advisor」を一般提供開始、AIネイティブRIA（Arca・Era）が台頭（提供開始）</span>
         </div>
-        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol3_20260629.pdf" target="_blank">PDFを開く</a></div>
+        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol3_20260629.pdf" target="_blank">PDF版</a></div>
       </div>
 
       <!-- Vol.2 -->
@@ -269,6 +299,7 @@
           <span class="vol-title">Vol.2</span>
           <span class="vol-date">2026年6月26日</span>
         </div>
+        <div class="topic-label">主要なTopic</div>
         <div class="news">
           <span class="tags"><span class="imp watch">注目</span><span class="cat">🌐 海外</span></span>
           <span class="txt">CitiがGoogle DeepMind製AIアバター「Citi Sky」を発表、Citigold顧客向けに今夏展開（予定）</span>
@@ -281,7 +312,7 @@
           <span class="tags"><span class="imp top">最重要</span><span class="cat">⚖️ 規制</span></span>
           <span class="txt">金融庁・日銀がフロンティアAI脅威への対応を要請（2026/5/22、発出・施行）</span>
         </div>
-        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol2_20260626.pdf" target="_blank">PDFを開く</a></div>
+        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol2_20260626.pdf" target="_blank">PDF版</a></div>
       </div>
 
       <!-- Vol.1 -->
@@ -290,6 +321,7 @@
           <span class="vol-title">Vol.1</span>
           <span class="vol-date">2026年6月26日</span>
         </div>
+        <div class="topic-label">主要なTopic</div>
         <div class="news">
           <span class="tags"><span class="imp watch">注目</span><span class="cat">🌐 海外</span></span>
           <span class="txt">Morgan Stanleyが外部AIエージェントにウェルス基盤を開放（MCP経由、早期提供・全面展開は2027年）</span>
@@ -302,10 +334,13 @@
           <span class="tags"><span class="imp top">最重要</span><span class="cat">🚀 Tech</span></span>
           <span class="txt">NewEdge Advisors（AUM$100B超）がClaudeを全アドバイザーに展開（実運用中）</span>
         </div>
-        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol1_20260626.pdf" target="_blank">PDFを開く</a></div>
+        <div class="actions"><a class="ghost" href="WM_AI_Weekly_Vol1_20260626.pdf" target="_blank">PDF版</a></div>
       </div>
 
-      <h2 class="sectitle">月次ディープリサーチ（Monthly）</h2>
+      </div><!-- /pane-weekly -->
+
+      <!-- ===== Monthly pane ===== -->
+      <div id="pane-monthly" class="tabpane" style="display:none;">
 
       <!-- Monthly 2026-06 -->
       <div class="vol-card monthly">
@@ -313,6 +348,7 @@
           <span class="vol-title">2026年6月号</span>
           <span class="vol-date">2026年6月</span>
         </div>
+        <div class="topic-label">主要なTopic</div>
         <div class="news">
           <span class="tags"><span class="cat mo">📘 月次</span></span>
           <span class="txt">競争地図と大手行AIの実装実態——「誰が、どこで稼いでいるか」を8章立てで深掘り</span>
@@ -325,8 +361,10 @@
           <span class="tags"><span class="cat mo">📘 月次</span></span>
           <span class="txt">日本市場「2〜3年遅れ」の先、規制競争、2026年後半の戦略アジェンダ（全19ページ）</span>
         </div>
-        <div class="actions"><a class="ghost" href="WM_AI_DeepResearch_2026_06.pdf" target="_blank">PDFを開く</a></div>
+        <div class="actions"><a class="ghost" href="WM_AI_DeepResearch_2026_06.pdf" target="_blank">PDF版</a></div>
       </div>
+
+      </div><!-- /pane-monthly -->
     </main>
 
     <footer>WM×AI Intelligence Report ｜ 関係者限定共有ページ ｜ 週次 全6巻（Vol.1〜6）＋月次ディープリサーチ</footer>
@@ -335,7 +373,7 @@
 <script>
   // Lightweight deterrent gate only — NOT real access control.
   // Anyone with the page source or URL + password can view the content.
-  var PW_HASH = "51ddbfde58ebd7dadb4022c44cffc46bddceab1153b16e57c04e3908b37b7430"; // SHA-256 of the shared password (plaintext is NOT stored here)
+  var PW_HASH = "3f1f7623d746bc4e68dc4391e36304252ecd3b955cb6a110dba670f7ce408d3c";
 
   async function sha256(text) {
     const enc = new TextEncoder().encode(text);
@@ -363,6 +401,14 @@
   if (sessionStorage.getItem("wm_ai_ok") === "1") {
     document.getElementById("gate").style.display = "none";
     document.getElementById("content").style.display = "block";
+  }
+
+  // ---------- Weekly / Monthly tab switching ----------
+  function showTab(name) {
+    var tabs = document.querySelectorAll(".tab");
+    tabs.forEach(function(t) { t.classList.toggle("active", t.getAttribute("data-tab") === name); });
+    document.getElementById("pane-weekly").style.display  = (name === "weekly")  ? "block" : "none";
+    document.getElementById("pane-monthly").style.display = (name === "monthly") ? "block" : "none";
   }
 </script>
 </body>
