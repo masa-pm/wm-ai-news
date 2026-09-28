@@ -110,19 +110,25 @@
   #pane-daily .cw-filters button { font-size: 12px; padding: 5px 12px; border: 1px solid #c3d0de;
     background: white; color: var(--grey); border-radius: 14px; cursor: pointer; font-family: inherit; }
   #pane-daily .cw-filters button[aria-pressed="true"] { background: var(--green); color: white; border-color: var(--green); }
-  #pane-daily .cw-card { background: white; border-radius: 8px; padding: 16px 20px; margin-bottom: 14px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 5px solid var(--green); }
-  #pane-daily .cw-card[data-tier="ベンチマーク"] { border-left-color: var(--purple); }
-  #pane-daily .cw-card[data-tier="業界動向"] { border-left-color: var(--yellow); }
-  #pane-daily .cw-meta { font-size: 11.5px; color: var(--grey); margin: 0 0 4px; }
-  #pane-daily .cw-meta span + span::before { content: "／"; margin: 0 4px; color: #ccc; }
-  #pane-daily .cw-title { font-size: 15px; font-weight: bold; margin: 0 0 8px; color: #222; }
-  #pane-daily .cw-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 6px; }
-  #pane-daily .cw-tag { display: inline-block; font-size: 10px; font-weight: bold; padding: 2px 8px;
-    border-radius: 3px; border: 1px solid #c3d0de; color: var(--navy); background: #f6f9fc; }
-  #pane-daily .cw-tag.go { border-color: #bfe0c4; color: var(--green); background: #eef8ef; }
-  #pane-daily .cw-tag.warn { border-color: #f0dba8; color: var(--yellow); background: #fdf6e6; }
-  #pane-daily .cw-reason { font-size: 12.5px; color: var(--grey); margin: 6px 0 0; }
+  /* 日付ごとにグルーピングしたカード（週次・月次のvol-cardと統一感を持たせる） */
+  #pane-daily .cw-daygroup { background: white; border-radius: 8px; padding: 20px 22px;
+    margin-bottom: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  #pane-daily .cw-day-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px;
+    border-bottom: 1px solid #eef1f4; padding-bottom: 8px; }
+  #pane-daily .cw-day-title { font-size: 16px; font-weight: bold; color: var(--navy); }
+  #pane-daily .cw-row { padding: 9px 0; border-bottom: 1px solid #f2f4f6; }
+  #pane-daily .cw-row:last-child { border-bottom: none; padding-bottom: 0; }
+  #pane-daily .cw-row-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  #pane-daily .cw-row-company { font-size: 14px; font-weight: bold; color: #222; }
+  #pane-daily .cw-row-text { font-size: 13px; color: var(--grey); margin: 3px 0 0; line-height: 1.6; }
+  #pane-daily .cw-row-text a { color: inherit; text-decoration: underline; text-decoration-color: #ccc; }
+  #pane-daily .cw-cat { display: inline-block; flex: 0 0 auto; font-size: 10px; font-weight: bold;
+    padding: 2px 8px; border-radius: 3px; white-space: nowrap; border: 1px solid #c3d0de;
+    color: var(--navy); background: #f6f9fc; }
+  #pane-daily .cw-cat.core   { border-color: #bfe0c4; color: var(--green);  background: #eef8ef; }
+  #pane-daily .cw-cat.bench  { border-color: #d8c4e6; color: var(--purple); background: #f7f2fb; }
+  #pane-daily .cw-cat.trend  { border-color: #f0dba8; color: #8a6d1f;       background: #fdf6e6; }
+  #pane-daily .cw-row-flag { font-size: 10px; font-weight: bold; color: var(--red); margin-left: 4px; }
   #pane-daily .cw-empty { padding: 30px; text-align: center; color: var(--grey); background: white;
     border-radius: 8px; }
   #pane-daily .cw-footnote { font-size: 11px; color: #999; margin-top: 10px; }
@@ -775,17 +781,45 @@
     return true;
   }
 
+  const CW_CAT_CLASS = { "コア": "core", "ベンチマーク": "bench", "業界動向": "trend" };
+  const CW_CAT_LABEL = { "コア": "国内競合", "ベンチマーク": "海外先行", "業界動向": "業界動向", "周辺": "周辺" };
+
+  function cwFmtFullDate(iso) {
+    const d = new Date(iso);
+    const wd = "日月火水木金土"[d.getDay()];
+    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日（${wd}）`;
+  }
+
   function cwRow(i) {
-    const statusCls = i.status.startsWith("報道段階") ? "warn" : "";
-    const recCls = i.recommendation === "報告" ? "go" : "";
-    const title = i.url
+    const flag = i.recommendation === "報告" ? '<span class="cw-row-flag">要確認</span>' : "";
+    const titleHtml = i.url
       ? `<a href="${cwEsc(i.url)}" target="_blank" rel="noopener noreferrer">${cwEsc(i.title)}</a>`
       : cwEsc(i.title);
-    return `<div class="cw-card" data-tier="${cwEsc(i.tier)}">
-      <p class="cw-meta"><span>${cwEsc(i.tier)}</span><span>${cwEsc(i.company)}</span><span>${cwEsc(i.source)}</span><span>${cwFmtDate(i.date)}</span></p>
-      <p class="cw-title">${title}</p>
-      <div class="cw-tags"><span class="cw-tag ${recCls}">AI推奨：${cwEsc(i.recommendation)}</span><span class="cw-tag ${statusCls}">${cwEsc(i.status)}</span><span class="cw-tag">${cwEsc(i.viewpoint)}</span></div>
-      <p class="cw-reason">${cwEsc(i.reason)}</p>
+    const catCls = CW_CAT_CLASS[i.tier] || "";
+    const catLabel = CW_CAT_LABEL[i.tier] || cwEsc(i.tier);
+    return `<div class="cw-row">
+      <div class="cw-row-head">
+        <span class="cw-row-company">${cwEsc(i.company)}${flag}</span>
+        <span class="cw-cat ${catCls}">${catLabel}</span>
+      </div>
+      <p class="cw-row-text">${titleHtml}</p>
+    </div>`;
+  }
+
+  function cwGroupByDate(items) {
+    const groups = new Map();
+    for (const i of items) {
+      const key = i.date;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(i);
+    }
+    return [...groups.entries()].sort((a, b) => new Date(b[0]) - new Date(a[0]));
+  }
+
+  function cwDayGroup([date, items]) {
+    return `<div class="cw-daygroup">
+      <div class="cw-day-head"><span class="cw-day-title">📅 ${cwFmtFullDate(date)}</span></div>
+      ${items.map(cwRow).join("")}
     </div>`;
   }
 
@@ -796,7 +830,7 @@
       `${g.getMonth() + 1}月${g.getDate()}日更新　全${items.length}件`;
     const shown = items.filter(cwMatches);
     document.getElementById("cwList").innerHTML = shown.length
-      ? shown.map(cwRow).join("")
+      ? cwGroupByDate(shown).map(cwDayGroup).join("")
       : `<div class="cw-empty">この条件に一致する候補はありません。</div>`;
   }
 </script>
