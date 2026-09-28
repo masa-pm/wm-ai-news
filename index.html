@@ -89,6 +89,43 @@
   .tab.active { color: var(--navy); border-bottom-color: var(--navy); }
   .tab[data-tab="monthly"]:hover { color: var(--purple); }
   .tab[data-tab="monthly"].active { color: var(--purple); border-bottom-color: var(--purple); }
+  .tab[data-tab="daily"]:hover { color: var(--green); }
+  .tab[data-tab="daily"].active { color: var(--green); border-bottom-color: var(--green); }
+
+  /* ---------- Daily competitor watch tab (namespaced cw-) ---------- */
+  #pane-daily .cw-gate { max-width: 340px; margin: 24px auto; background: white; border-radius: 8px;
+    padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  #pane-daily .cw-gate p { font-size: 12px; color: var(--grey); margin: 0 0 14px; }
+  #pane-daily .cw-gate input { width: 100%; padding: 9px 11px; font-size: 14px; border: 1px solid #ccc;
+    border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; }
+  #pane-daily .cw-gate button { width: 100%; padding: 9px 11px; font-size: 14px; font-weight: bold;
+    background: var(--green); color: white; border: none; border-radius: 6px; cursor: pointer; }
+  #pane-daily .cw-err { color: var(--red); font-size: 12px; min-height: 1.4em; margin: 0 0 6px; }
+  #pane-daily .cw-app { display: none; }
+  #pane-daily .cw-tally { font-size: 12px; color: var(--grey); margin: 0 0 14px; }
+  #pane-daily .cw-search { margin-bottom: 10px; }
+  #pane-daily .cw-search input { width: 100%; box-sizing: border-box; padding: 9px 12px; font-size: 14px;
+    border: 1px solid #c3d0de; border-radius: 6px; font-family: inherit; }
+  #pane-daily .cw-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  #pane-daily .cw-filters button { font-size: 12px; padding: 5px 12px; border: 1px solid #c3d0de;
+    background: white; color: var(--grey); border-radius: 14px; cursor: pointer; font-family: inherit; }
+  #pane-daily .cw-filters button[aria-pressed="true"] { background: var(--green); color: white; border-color: var(--green); }
+  #pane-daily .cw-card { background: white; border-radius: 8px; padding: 16px 20px; margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 5px solid var(--green); }
+  #pane-daily .cw-card[data-tier="ベンチマーク"] { border-left-color: var(--purple); }
+  #pane-daily .cw-card[data-tier="業界動向"] { border-left-color: var(--yellow); }
+  #pane-daily .cw-meta { font-size: 11.5px; color: var(--grey); margin: 0 0 4px; }
+  #pane-daily .cw-meta span + span::before { content: "／"; margin: 0 4px; color: #ccc; }
+  #pane-daily .cw-title { font-size: 15px; font-weight: bold; margin: 0 0 8px; color: #222; }
+  #pane-daily .cw-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 6px; }
+  #pane-daily .cw-tag { display: inline-block; font-size: 10px; font-weight: bold; padding: 2px 8px;
+    border-radius: 3px; border: 1px solid #c3d0de; color: var(--navy); background: #f6f9fc; }
+  #pane-daily .cw-tag.go { border-color: #bfe0c4; color: var(--green); background: #eef8ef; }
+  #pane-daily .cw-tag.warn { border-color: #f0dba8; color: var(--yellow); background: #fdf6e6; }
+  #pane-daily .cw-reason { font-size: 12.5px; color: var(--grey); margin: 6px 0 0; }
+  #pane-daily .cw-empty { padding: 30px; text-align: center; color: var(--grey); background: white;
+    border-radius: 8px; }
+  #pane-daily .cw-footnote { font-size: 11px; color: #999; margin-top: 10px; }
   .tabpane { animation: fade .2s ease; }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
@@ -194,6 +231,7 @@
       <div class="tabs">
         <button class="tab active" data-tab="weekly" onclick="showTab('weekly')">週次レポート（Weekly）</button>
         <button class="tab" data-tab="monthly" onclick="showTab('monthly')">月次ディープリサーチ（Monthly）</button>
+        <button class="tab" data-tab="daily" onclick="showTab('daily')">デイリー競合ウォッチ（Daily）</button>
       </div>
 
       <!-- ===== Weekly pane ===== -->
@@ -587,6 +625,23 @@
       </div>
 
       </div><!-- /pane-monthly -->
+
+      <!-- ===== Daily pane (competitor-watch, independently encrypted) ===== -->
+      <div id="pane-daily" class="tabpane" style="display:none;">
+        <div class="cw-gate" id="cwGate">
+          <p>デイリー競合ウォッチは、週次・月次とは別にAES-256で暗号化されています。専用パスワードを入力してください。</p>
+          <input type="password" id="cwPw" placeholder="パスワード" autocomplete="off">
+          <button onclick="cwUnlock()">表示する</button>
+          <div class="cw-err" id="cwErr"></div>
+        </div>
+        <div class="cw-app" id="cwApp">
+          <p class="cw-tally" id="cwTally"></p>
+          <div class="cw-search"><input type="search" id="cwQ" placeholder="社名・見出し・理由で検索"></div>
+          <div class="cw-filters" id="cwTierFilters"></div>
+          <div id="cwList"></div>
+          <p class="cw-footnote">競合各社の動きを毎朝自動収集した候補一覧です。詳細な絞り込み・Excel出力は競合ウォッチ本体をご覧ください。</p>
+        </div>
+      </div><!-- /pane-daily -->
     </main>
 
     <footer>WM×AI Intelligence Report ｜ 関係者限定共有ページ ｜ 週次 全14巻（Vol.1〜14）＋月次ディープリサーチ</footer>
@@ -625,12 +680,124 @@
     document.getElementById("content").style.display = "block";
   }
 
-  // ---------- Weekly / Monthly tab switching ----------
+  // ---------- Weekly / Monthly / Daily tab switching ----------
   function showTab(name) {
     var tabs = document.querySelectorAll(".tab");
     tabs.forEach(function(t) { t.classList.toggle("active", t.getAttribute("data-tab") === name); });
     document.getElementById("pane-weekly").style.display  = (name === "weekly")  ? "block" : "none";
     document.getElementById("pane-monthly").style.display = (name === "monthly") ? "block" : "none";
+    document.getElementById("pane-daily").style.display   = (name === "daily")   ? "block" : "none";
+  }
+</script>
+
+<script>
+  // ---------- Daily competitor-watch pane: independent real encryption ----------
+  // 週次・月次と違い「本物の」暗号化（PBKDF2-SHA256 25万回 + AES-256-GCM）。
+  // competitor-watch本体（web/index.html）と全く同じ方式・同じパスワードで復号する。
+  // daily-data.enc.json は competitor-watch の自動実行から直接pushされる。
+  let CW_DATA = null;
+  const CW_TIER_ORDER = ["コア", "ベンチマーク", "周辺", "業界動向"];
+  const cwState = { q: "", tier: "all" };
+
+  function cwB64(s) { return Uint8Array.from(atob(s), (c) => c.charCodeAt(0)); }
+  function cwEsc(s) {
+    return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function cwFmtDate(iso) { const d = new Date(iso); return `${d.getMonth() + 1}月${d.getDate()}日`; }
+
+  async function cwDecrypt(pw) {
+    const res = await fetch("daily-data.enc.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("fetch");
+    const enc = await res.json();
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt: cwB64(enc.salt), iterations: enc.iter, hash: "SHA-256" },
+      base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: cwB64(enc.iv) }, key, cwB64(enc.ct));
+    return JSON.parse(new TextDecoder().decode(plain));
+  }
+
+  async function cwUnlock() {
+    const pw = document.getElementById("cwPw").value;
+    const err = document.getElementById("cwErr");
+    if (!pw) { err.textContent = "パスワードを入力してください。"; return; }
+    err.textContent = "確認しています…";
+    try {
+      CW_DATA = await cwDecrypt(pw);
+      document.getElementById("cwPw").value = "";
+      document.getElementById("cwGate").style.display = "none";
+      document.getElementById("cwApp").style.display = "block";
+      cwInit();
+    } catch (e) {
+      err.textContent = e.message === "fetch"
+        ? "データを読み込めませんでした。ページを再読み込みしてください。"
+        : "パスワードが違います（競合ウォッチ本体と同じパスワードです）。";
+    }
+  }
+  document.getElementById("cwPw").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") cwUnlock();
+  });
+  document.getElementById("cwPw").addEventListener("input", function () {
+    document.getElementById("cwErr").textContent = "";
+  });
+
+  function cwUniqueTiers(items) {
+    const present = new Set(items.map((i) => i.tier).filter(Boolean));
+    const ordered = CW_TIER_ORDER.filter((t) => present.has(t));
+    const rest = [...present].filter((t) => !CW_TIER_ORDER.includes(t));
+    return [...ordered, ...rest];
+  }
+
+  function cwInit() {
+    const tiers = cwUniqueTiers(CW_DATA.items);
+    const wrap = document.getElementById("cwTierFilters");
+    wrap.innerHTML = [`<button data-tier="all" aria-pressed="true">すべて</button>`]
+      .concat(tiers.map((t) => `<button data-tier="${cwEsc(t)}" aria-pressed="false">${cwEsc(t)}</button>`))
+      .join("");
+    wrap.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+      wrap.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      cwState.tier = b.dataset.tier;
+      cwRender();
+    }));
+    document.getElementById("cwQ").addEventListener("input", (e) => {
+      cwState.q = e.target.value.trim();
+      cwRender();
+    });
+    cwRender();
+  }
+
+  function cwMatches(i) {
+    if (cwState.tier !== "all" && i.tier !== cwState.tier) return false;
+    if (cwState.q) {
+      const hay = `${i.company} ${i.title} ${i.reason}`.toLowerCase();
+      if (!hay.includes(cwState.q.toLowerCase())) return false;
+    }
+    return true;
+  }
+
+  function cwRow(i) {
+    const statusCls = i.status.startsWith("報道段階") ? "warn" : "";
+    const recCls = i.recommendation === "報告" ? "go" : "";
+    const title = i.url
+      ? `<a href="${cwEsc(i.url)}" target="_blank" rel="noopener noreferrer">${cwEsc(i.title)}</a>`
+      : cwEsc(i.title);
+    return `<div class="cw-card" data-tier="${cwEsc(i.tier)}">
+      <p class="cw-meta"><span>${cwEsc(i.tier)}</span><span>${cwEsc(i.company)}</span><span>${cwEsc(i.source)}</span><span>${cwFmtDate(i.date)}</span></p>
+      <p class="cw-title">${title}</p>
+      <div class="cw-tags"><span class="cw-tag ${recCls}">AI推奨：${cwEsc(i.recommendation)}</span><span class="cw-tag ${statusCls}">${cwEsc(i.status)}</span><span class="cw-tag">${cwEsc(i.viewpoint)}</span></div>
+      <p class="cw-reason">${cwEsc(i.reason)}</p>
+    </div>`;
+  }
+
+  function cwRender() {
+    const items = CW_DATA.items;
+    const g = new Date(CW_DATA.generated_at);
+    document.getElementById("cwTally").textContent =
+      `${g.getMonth() + 1}月${g.getDate()}日更新　全${items.length}件`;
+    const shown = items.filter(cwMatches);
+    document.getElementById("cwList").innerHTML = shown.length
+      ? shown.map(cwRow).join("")
+      : `<div class="cw-empty">この条件に一致する候補はありません。</div>`;
   }
 </script>
 </body>
