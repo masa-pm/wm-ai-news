@@ -941,8 +941,18 @@
     document.getElementById("cwTally").textContent =
       `${g.getMonth() + 1}月${g.getDate()}日更新　全${items.length}件`;
     const shown = items.filter(cwMatches);
-    document.getElementById("cwList").innerHTML = shown.length
-      ? cwGroupByDate(shown).map(cwDayGroup).join("")
+    let groups = cwGroupByDate(shown);
+    // フィルタ・検索が無いときのみ、採用0件だった実行日を空カードとして日付順に差し込む
+    const noFilter = cwState.tier === "all" && !cwState.q;
+    if (noFilter && Array.isArray(CW_DATA.empty_days)) {
+      const haveDates = new Set(groups.map((e) => e[0]));
+      for (const d of CW_DATA.empty_days) {
+        if (!haveDates.has(d)) { groups.push([d, []]); haveDates.add(d); }
+      }
+      groups.sort((a, b) => new Date(b[0]) - new Date(a[0]));
+    }
+    document.getElementById("cwList").innerHTML = groups.length
+      ? groups.map(cwDayGroup).join("")
       : `<div class="cw-empty">この条件に一致する候補はありません。</div>`;
   }
 
