@@ -221,7 +221,14 @@
         本ページは関係者限定の共有ページです。各レポートは確認できた一次情報のみを掲載し、推測・未確認情報は明示的に区別しています。詳細は各レポート（HTML／PDF）をご参照ください。
       </div>
 
-      <div class="legend">
+      <!-- ===== Tabs ===== -->
+      <div class="tabs">
+        <button class="tab active" data-tab="weekly" onclick="showTab('weekly')">週次レポート（Weekly）</button>
+        <button class="tab" data-tab="monthly" onclick="showTab('monthly')">月次ディープリサーチ（Monthly）</button>
+        <button class="tab" data-tab="daily" onclick="showTab('daily')">デイリー競合ウォッチ（Daily）</button>
+      </div>
+
+      <div class="legend" id="legend-weekly">
         <span class="lbl">重要度（実在性）</span>
         <span class="imp top">最重要</span> 実際に稼働・利用中／規制は成立・施行済み
         <span class="imp watch">注目</span> 発表・計画・試験・研究段階（アドバルーン寄り）
@@ -232,12 +239,25 @@
         <span class="cat">⚖️ 規制</span> 当局・ガバナンス
         <span class="cat">🚀 Tech</span> WealthTech・AIベンダー
       </div>
-
-      <!-- ===== Tabs ===== -->
-      <div class="tabs">
-        <button class="tab active" data-tab="weekly" onclick="showTab('weekly')">週次レポート（Weekly）</button>
-        <button class="tab" data-tab="monthly" onclick="showTab('monthly')">月次ディープリサーチ（Monthly）</button>
-        <button class="tab" data-tab="daily" onclick="showTab('daily')">デイリー競合ウォッチ（Daily）</button>
+      <div class="legend" id="legend-monthly" style="display:none;">
+        <span class="lbl">重要度（実在性）</span>
+        <span class="imp top">最重要</span> 実際に稼働・利用中／規制は成立・施行済み
+        <span class="imp watch">注目</span> 発表・計画・試験・研究段階（アドバルーン寄り）
+        <span class="sep"></span>
+        <span class="lbl">分野</span>
+        <span class="cat">🌐 海外</span> グローバル大手行
+        <span class="cat">🏯 国内</span> 国内メガバンク
+        <span class="cat">⚖️ 規制</span> 当局・ガバナンス
+        <span class="cat">🚀 Tech</span> WealthTech・AIベンダー
+      </div>
+      <div class="legend" id="legend-daily" style="display:none;">
+        <span class="lbl">区分</span>
+        <span class="cat" style="border-color:#bfe0c4;color:var(--green);background:#eef8ef;">コア</span> 国内の直接競合
+        <span class="cat" style="border-color:#d8c4e6;color:var(--purple);background:#f7f2fb;">ベンチマーク</span> 海外・先行事例
+        <span class="cat" style="border-color:#f0dba8;color:#8a6d1f;background:#fdf6e6;">業界動向</span> 競合の動きではないが参考になる情報
+        <span class="sep"></span>
+        <span class="lbl">表示</span>
+        <span style="color:var(--red);font-weight:bold;font-size:10px;">要確認</span> AI推奨が「報告」＝経営層への即時報告候補
       </div>
 
       <!-- ===== Weekly pane ===== -->
@@ -693,6 +713,9 @@
     document.getElementById("pane-weekly").style.display  = (name === "weekly")  ? "block" : "none";
     document.getElementById("pane-monthly").style.display = (name === "monthly") ? "block" : "none";
     document.getElementById("pane-daily").style.display   = (name === "daily")   ? "block" : "none";
+    document.getElementById("legend-weekly").style.display  = (name === "weekly")  ? "block" : "none";
+    document.getElementById("legend-monthly").style.display = (name === "monthly") ? "block" : "none";
+    document.getElementById("legend-daily").style.display   = (name === "daily")   ? "block" : "none";
   }
 </script>
 
