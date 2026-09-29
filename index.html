@@ -128,6 +128,7 @@
   #pane-daily .cw-cat.core   { border-color: #bfe0c4; color: var(--green);  background: #eef8ef; }
   #pane-daily .cw-cat.bench  { border-color: #d8c4e6; color: var(--purple); background: #f7f2fb; }
   #pane-daily .cw-cat.trend  { border-color: #f0dba8; color: #8a6d1f;       background: #fdf6e6; }
+  #pane-daily .cw-cat.periph { border-color: #c3d0de; color: var(--grey);   background: #f6f9fc; }
   #pane-daily .cw-row-flag { font-size: 10px; font-weight: bold; color: var(--red); margin-left: 4px; }
   #pane-daily .cw-empty { padding: 30px; text-align: center; color: var(--grey); background: white;
     border-radius: 8px; }
@@ -223,12 +224,12 @@
 
       <!-- ===== Tabs ===== -->
       <div class="tabs">
-        <button class="tab active" data-tab="weekly" onclick="showTab('weekly')">週次レポート（Weekly）</button>
+        <button class="tab active" data-tab="daily" onclick="showTab('daily')">デイリー競合ウォッチ（Daily）</button>
+        <button class="tab" data-tab="weekly" onclick="showTab('weekly')">週次レポート（Weekly）</button>
         <button class="tab" data-tab="monthly" onclick="showTab('monthly')">月次ディープリサーチ（Monthly）</button>
-        <button class="tab" data-tab="daily" onclick="showTab('daily')">デイリー競合ウォッチ（Daily）</button>
       </div>
 
-      <div class="legend" id="legend-weekly">
+      <div class="legend" id="legend-weekly" style="display:none;">
         <span class="lbl">重要度（実在性）</span>
         <span class="imp top">最重要</span> 実際に稼働・利用中／規制は成立・施行済み
         <span class="imp watch">注目</span> 発表・計画・試験・研究段階（アドバルーン寄り）
@@ -243,18 +244,19 @@
         <span class="lbl">分野</span>
         <span class="cat mo">📘 月次</span> 月次ディープリサーチの主要Topic
       </div>
-      <div class="legend" id="legend-daily" style="display:none;">
+      <div class="legend" id="legend-daily">
         <span class="lbl">区分</span>
-        <span class="cat" style="border-color:#bfe0c4;color:var(--green);background:#eef8ef;">コア</span> 国内の直接競合
-        <span class="cat" style="border-color:#d8c4e6;color:var(--purple);background:#f7f2fb;">ベンチマーク</span> 海外・先行事例
+        <span class="cat" style="border-color:#bfe0c4;color:var(--green);background:#eef8ef;">国内競合</span> コア企業（国内の直接競合）
+        <span class="cat" style="border-color:#d8c4e6;color:var(--purple);background:#f7f2fb;">海外先行</span> ベンチマーク企業（海外の先行事例）
+        <span class="cat" style="border-color:#c3d0de;color:var(--grey);background:#f6f9fc;">周辺</span> 周辺企業（大きな動きのみ）
         <span class="cat" style="border-color:#f0dba8;color:#8a6d1f;background:#fdf6e6;">業界動向</span> 競合の動きではないが参考になる情報
         <span class="sep"></span>
         <span class="lbl">表示</span>
-        <span style="color:var(--red);font-weight:bold;font-size:10px;">要確認</span> AI推奨が「報告」＝経営層への即時報告候補
+        <span style="color:var(--red);font-weight:bold;font-size:10px;">要確認</span> 即時報告の判定＝経営層への即時報告候補
       </div>
 
       <!-- ===== Weekly pane ===== -->
-      <div id="pane-weekly" class="tabpane">
+      <div id="pane-weekly" class="tabpane" style="display:none;">
 
       <!-- Vol.14 -->
       <div class="vol-card">
@@ -646,7 +648,7 @@
       </div><!-- /pane-monthly -->
 
       <!-- ===== Daily pane (competitor-watch, independently encrypted) ===== -->
-      <div id="pane-daily" class="tabpane" style="display:none;">
+      <div id="pane-daily" class="tabpane">
         <div class="cw-gate" id="cwGate">
           <p>デイリー競合ウォッチは、週次・月次とは別にAES-256で暗号化されています。専用パスワードを入力してください。</p>
           <input type="password" id="cwPw" placeholder="パスワード" autocomplete="off">
@@ -685,6 +687,7 @@
       document.getElementById("content").style.display = "block";
       sessionStorage.setItem("wm_ai_ok", "1");
       sessionStorage.setItem("wm_ai_pw", val);
+      if (typeof cwAutoUnlock === "function") { cwAutoUnlock(); }
     } else {
       document.getElementById("err").textContent = "パスワードが違います。";
     }
@@ -812,13 +815,13 @@
   function cwMatches(i) {
     if (cwState.tier !== "all" && i.tier !== cwState.tier) return false;
     if (cwState.q) {
-      const hay = `${i.company} ${i.title} ${i.reason}`.toLowerCase();
+      const hay = `${i.company} ${i.title}`.toLowerCase();
       if (!hay.includes(cwState.q.toLowerCase())) return false;
     }
     return true;
   }
 
-  const CW_CAT_CLASS = { "コア": "core", "ベンチマーク": "bench", "業界動向": "trend" };
+  const CW_CAT_CLASS = { "コア": "core", "ベンチマーク": "bench", "業界動向": "trend", "周辺": "periph" };
   const CW_CAT_LABEL = { "コア": "国内競合", "ベンチマーク": "海外先行", "業界動向": "業界動向", "周辺": "周辺" };
 
   function cwFmtFullDate(iso) {
@@ -828,7 +831,7 @@
   }
 
   function cwRow(i) {
-    const flag = i.recommendation === "報告" ? '<span class="cw-row-flag">要確認</span>' : "";
+    const flag = i.flagged ? '<span class="cw-row-flag">要確認</span>' : "";
     const titleHtml = i.url
       ? `<a href="${cwEsc(i.url)}" target="_blank" rel="noopener noreferrer">${cwEsc(i.title)}</a>`
       : cwEsc(i.title);
@@ -870,6 +873,10 @@
       ? cwGroupByDate(shown).map(cwDayGroup).join("")
       : `<div class="cw-empty">この条件に一致する候補はありません。</div>`;
   }
+
+  // Dailyがデフォルトタブになったため、ページ読み込み時にも自動解除を試みる
+  // （サイト全体のゲートを既に通過済みで wm_ai_pw が残っている場合のみ有効）
+  cwAutoUnlock();
 </script>
 </body>
 </html>
