@@ -116,9 +116,10 @@
   #pane-daily .cw-day-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px;
     border-bottom: 1px solid #eef1f4; padding-bottom: 8px; }
   #pane-daily .cw-day-title { font-size: 16px; font-weight: bold; color: var(--navy); }
+  #pane-daily .cw-day-summary { font-size: 12px; color: var(--grey); }
   #pane-daily .cw-row { padding: 9px 0; border-bottom: 1px solid #f2f4f6; }
   #pane-daily .cw-row:last-child { border-bottom: none; padding-bottom: 0; }
-  #pane-daily .cw-row-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  #pane-daily .cw-row-head { display: flex; justify-content: flex-start; align-items: baseline; gap: 8px; }
   #pane-daily .cw-row-company { font-size: 14px; font-weight: bold; color: #222; }
   #pane-daily .cw-row-text { font-size: 13px; color: var(--grey); margin: 3px 0 0; line-height: 1.6; }
   #pane-daily .cw-row-text a { color: inherit; text-decoration: underline; text-decoration-color: #ccc; }
@@ -839,8 +840,8 @@
     const catLabel = CW_CAT_LABEL[i.tier] || cwEsc(i.tier);
     return `<div class="cw-row">
       <div class="cw-row-head">
-        <span class="cw-row-company">${cwEsc(i.company)}${flag}</span>
         <span class="cw-cat ${catCls}">${catLabel}</span>
+        <span class="cw-row-company">${cwEsc(i.company)}${flag}</span>
       </div>
       <p class="cw-row-text">${titleHtml}</p>
     </div>`;
@@ -857,8 +858,14 @@
   }
 
   function cwDayGroup([date, items]) {
+    const flaggedCount = items.filter((i) => i.flagged).length;
+    const otherCount = items.length - flaggedCount;
+    const summary = `重要${flaggedCount}件・参考${otherCount}件`;
     return `<div class="cw-daygroup">
-      <div class="cw-day-head"><span class="cw-day-title">📅 ${cwFmtFullDate(date)}</span></div>
+      <div class="cw-day-head">
+        <span class="cw-day-title">📅 ${cwFmtFullDate(date)}</span>
+        <span class="cw-day-summary">${summary}</span>
+      </div>
       ${items.map(cwRow).join("")}
     </div>`;
   }
