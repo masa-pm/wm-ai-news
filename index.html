@@ -240,15 +240,8 @@
         <span class="cat">🚀 Tech</span> WealthTech・AIベンダー
       </div>
       <div class="legend" id="legend-monthly" style="display:none;">
-        <span class="lbl">重要度（実在性）</span>
-        <span class="imp top">最重要</span> 実際に稼働・利用中／規制は成立・施行済み
-        <span class="imp watch">注目</span> 発表・計画・試験・研究段階（アドバルーン寄り）
-        <span class="sep"></span>
         <span class="lbl">分野</span>
-        <span class="cat">🌐 海外</span> グローバル大手行
-        <span class="cat">🏯 国内</span> 国内メガバンク
-        <span class="cat">⚖️ 規制</span> 当局・ガバナンス
-        <span class="cat">🚀 Tech</span> WealthTech・AIベンダー
+        <span class="cat mo">📘 月次</span> 月次ディープリサーチの主要Topic
       </div>
       <div class="legend" id="legend-daily" style="display:none;">
         <span class="lbl">区分</span>
@@ -676,7 +669,7 @@
 <script>
   // Lightweight deterrent gate only — NOT real access control.
   // Anyone with the page source or URL + password can view the content.
-  var PW_HASH = "3f1f7623d746bc4e68dc4391e36304252ecd3b955cb6a110dba670f7ce408d3c";
+  var PW_HASH = "ef07e54012a6163497bf8262d309a75f3bf12ee27b129d9070ac156b0cc5ae79";
 
   async function sha256(text) {
     const enc = new TextEncoder().encode(text);
@@ -691,6 +684,7 @@
       document.getElementById("gate").style.display = "none";
       document.getElementById("content").style.display = "block";
       sessionStorage.setItem("wm_ai_ok", "1");
+      sessionStorage.setItem("wm_ai_pw", val);
     } else {
       document.getElementById("err").textContent = "パスワードが違います。";
     }
@@ -716,6 +710,7 @@
     document.getElementById("legend-weekly").style.display  = (name === "weekly")  ? "block" : "none";
     document.getElementById("legend-monthly").style.display = (name === "monthly") ? "block" : "none";
     document.getElementById("legend-daily").style.display   = (name === "daily")   ? "block" : "none";
+    if (name === "daily" && typeof cwAutoUnlock === "function") { cwAutoUnlock(); }
   }
 </script>
 
@@ -746,22 +741,41 @@
     return JSON.parse(new TextDecoder().decode(plain));
   }
 
-  async function cwUnlock() {
-    const pw = document.getElementById("cwPw").value;
+  let CW_UNLOCKED = false;
+
+  async function cwTryUnlock(pw, silent) {
     const err = document.getElementById("cwErr");
-    if (!pw) { err.textContent = "パスワードを入力してください。"; return; }
-    err.textContent = "確認しています…";
+    if (!silent) err.textContent = "確認しています…";
     try {
       CW_DATA = await cwDecrypt(pw);
       document.getElementById("cwPw").value = "";
       document.getElementById("cwGate").style.display = "none";
       document.getElementById("cwApp").style.display = "block";
+      CW_UNLOCKED = true;
       cwInit();
+      return true;
     } catch (e) {
-      err.textContent = e.message === "fetch"
-        ? "データを読み込めませんでした。ページを再読み込みしてください。"
-        : "パスワードが違います（競合ウォッチ本体と同じパスワードです）。";
+      if (!silent) {
+        err.textContent = e.message === "fetch"
+          ? "データを読み込めませんでした。ページを再読み込みしてください。"
+          : "サイト全体のパスワードでは開けませんでした。競合ウォッチ本体と同じパスワードを入力してください。";
+      }
+      return false;
     }
+  }
+
+  async function cwUnlock() {
+    const pw = document.getElementById("cwPw").value;
+    if (!pw) { document.getElementById("cwErr").textContent = "パスワードを入力してください。"; return; }
+    await cwTryUnlock(pw, false);
+  }
+
+  // サイト全体のゲートで入力したパスワードを使って自動解除を試みる（一致しなければ手動入力欄を表示したまま）
+  async function cwAutoUnlock() {
+    if (CW_UNLOCKED) return;
+    const pw = sessionStorage.getItem("wm_ai_pw");
+    if (!pw) return;
+    await cwTryUnlock(pw, true);
   }
   document.getElementById("cwPw").addEventListener("keydown", function (e) {
     if (e.key === "Enter") cwUnlock();
