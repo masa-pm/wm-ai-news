@@ -131,6 +131,13 @@
   #pane-daily .cw-cat.trend  { border-color: #f0dba8; color: #8a6d1f;       background: #fdf6e6; }
   #pane-daily .cw-cat.periph { border-color: #c3d0de; color: var(--grey);   background: #f6f9fc; }
   #pane-daily .cw-row-flag { font-size: 10px; font-weight: bold; color: var(--red); margin-left: 4px; }
+  #pane-daily details.cw-details { margin-top: 8px; }
+  #pane-daily details.cw-details summary { font-size: 12px; color: var(--green); cursor: pointer; }
+  #pane-daily .cw-draft { margin: 8px 0 0; padding: 10px 12px; background: var(--bg);
+    border-radius: 6px; font-size: 12.5px; }
+  #pane-daily .cw-draft dt { font-weight: bold; font-size: 11.5px; margin-top: 6px; color: var(--navy); }
+  #pane-daily .cw-draft dt:first-child { margin-top: 0; }
+  #pane-daily .cw-draft dd { margin: 2px 0 0; white-space: pre-line; }
   #pane-daily .cw-empty { padding: 30px; text-align: center; color: var(--grey); background: white;
     border-radius: 8px; }
   #pane-daily .cw-footnote { font-size: 11px; color: #999; margin-top: 10px; }
@@ -838,12 +845,21 @@
       : cwEsc(i.title);
     const catCls = CW_CAT_CLASS[i.tier] || "";
     const catLabel = CW_CAT_LABEL[i.tier] || cwEsc(i.tier);
+    const d = i.draft;
+    const draftHtml = d ? `<details class="cw-details"><summary>5観点分析を見る</summary><dl class="cw-draft">
+      <dt>① 要約</dt><dd>${cwEsc(d.summary)}</dd>
+      <dt>② 斬新性</dt><dd>${cwEsc(d.novelty)}</dd>
+      <dt>③ 学び</dt><dd>${cwEsc(d.learning)}</dd>
+      <dt>④ 自社への導入可能性</dt><dd>${cwEsc(d.feasibility)}</dd>
+      <dt>⑤ 取るべきアクション（案）</dt><dd>${cwEsc(d.action)}</dd>
+    </dl></details>` : "";
     return `<div class="cw-row">
       <div class="cw-row-head">
         <span class="cw-cat ${catCls}">${catLabel}</span>
         <span class="cw-row-company">${cwEsc(i.company)}${flag}</span>
       </div>
       <p class="cw-row-text">${titleHtml}</p>
+      ${draftHtml}
     </div>`;
   }
 
