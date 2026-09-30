@@ -641,6 +641,28 @@
       <!-- ===== Monthly pane ===== -->
       <div id="pane-monthly" class="tabpane" style="display:none;">
 
+      <!-- Monthly 2026-10 -->
+      <div class="vol-card monthly">
+        <div class="vol-head">
+          <span class="vol-title">2026年10月号</span>
+          <span class="vol-date">2026年10月</span>
+        </div>
+        <div class="topic-label">主要なTopic</div>
+        <div class="news">
+          <span class="tags"><span class="cat mo">📘 月次</span></span>
+          <span class="txt">「コントロール・ポイント」の争奪戦——AIが“作業”をほぼ無料にする中、価値は許諾済みデータ・監査可能性・顧客接点・執行レールへ移動</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="cat mo">📘 月次</span></span>
+          <span class="txt">本番ROIはKYC/オンボーディング・面談事務から（DB SoW +30%見込み、BofA 最大4時間/面談）。顧客は“AIで武装した人間”を選ぶ（AI完全置換希望は3%）</span>
+        </div>
+        <div class="news">
+          <span class="tags"><span class="cat mo">📘 月次</span></span>
+          <span class="txt">国内メガのAIベンダー陣営が分岐し顧客向けAIエージェントが始動、Anthropic S-1報道・規制の実証型収斂まで8章立てで分析（全45ページ）</span>
+        </div>
+        <div class="actions"><a class="ghost" href="WM_AI_DeepResearch_2026_10.pdf" target="_blank">PDF版</a></div>
+      </div>
+
       <!-- Monthly 2026-09 -->
       <div class="vol-card monthly">
         <div class="vol-head">
@@ -941,18 +963,8 @@
     document.getElementById("cwTally").textContent =
       `${g.getMonth() + 1}月${g.getDate()}日更新　全${items.length}件`;
     const shown = items.filter(cwMatches);
-    let groups = cwGroupByDate(shown);
-    // フィルタ・検索が無いときのみ、採用0件だった実行日を空カードとして日付順に差し込む
-    const noFilter = cwState.tier === "all" && !cwState.q;
-    if (noFilter && Array.isArray(CW_DATA.empty_days)) {
-      const haveDates = new Set(groups.map((e) => e[0]));
-      for (const d of CW_DATA.empty_days) {
-        if (!haveDates.has(d)) { groups.push([d, []]); haveDates.add(d); }
-      }
-      groups.sort((a, b) => new Date(b[0]) - new Date(a[0]));
-    }
-    document.getElementById("cwList").innerHTML = groups.length
-      ? groups.map(cwDayGroup).join("")
+    document.getElementById("cwList").innerHTML = shown.length
+      ? cwGroupByDate(shown).map(cwDayGroup).join("")
       : `<div class="cw-empty">この条件に一致する候補はありません。</div>`;
   }
 
