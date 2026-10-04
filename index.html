@@ -946,12 +946,14 @@
       <dt>④ 自社への導入可能性</dt><dd>${cwEsc(d.feasibility)}</dd>
       <dt>⑤ 取るべきアクション（案）</dt><dd>${cwEsc(d.action)}</dd>
     </dl></details>` : "";
+    const pubHtml = i.pub_date ? `<p class="cw-row-pub" style="color:var(--grey);font-size:12px;margin:2px 0 0;">公開日：${cwFmtDate(i.pub_date)}</p>` : "";
     return `<div class="cw-row">
       <div class="cw-row-head">
         <span class="cw-cat ${catCls}">${catLabel}</span>
         <span class="cw-row-company">${cwEsc(i.company)}${flag}</span>
       </div>
       <p class="cw-row-text">${titleHtml}</p>
+      ${pubHtml}
       ${draftHtml}
     </div>`;
   }
